@@ -1,4 +1,3 @@
-import { Console } from "console";
 import { db_pool_connection } from "../database/db.js";
 import { response_success, response_create, response_not_found, response_error, response_bad_request } from "../response/responses.js";
 
@@ -26,7 +25,7 @@ export const IngresarUsuario = async (req, res) => {
 export const ConsultarUsuario = async (req, res) => {
     try {
 
-
+        
 
     } catch (error) {
         console.error("ERROR: ", error);
@@ -37,7 +36,20 @@ export const ConsultarUsuario = async (req, res) => {
 export const ActualizarUsuario = async (req, res) => {
     try {
 
+        const { id } = req.body;
+        const { username, password, email, rol } = req.body;
+        const query = `
+            UPDATE usuario
+            SET username = ?, password = ?, email = ?, rol = ?
+            WHERE id = ?
+        `;
 
+        const [rows] = await db_pool_connection.query(query, [username, password, email, rol, id]);
+        if (rows.affectedRows === 0)
+            return res.status(404).json(response_not_found("USUARIO NO ENCONTRADO"));
+        else
+            console.log("UPDATE USER: ", rows);
+            res.status(200).json(response_success(null, "USUARIO ACTUALIZADO CON EXITO"));
 
     } catch (error) {
         console.error("ERROR: ", error);
@@ -54,8 +66,9 @@ export const ListarUsuario = async (req, res) => {
         
         const [rows] = await db_pool_connection.query(query);
         if (rows.length <= 0) 
-            res.status(404).json(response_not_found("USUARIOS NO ENCONTRADOS"));
+            return res.status(404).json(response_not_found("USUARIOS NO ENCONTRADOS"));
         else 
+            console.log("LIST USER: ", rows);
             res.status(200).json(response_success(rows, "CONSULTA EXITOSA"));
 
     } catch (error) {
@@ -90,11 +103,11 @@ export const Login = async (req, res) => {
         `;
 
         const [rows] = await db_pool_connection.query(query, [username, password]);
-        if (rows.length === 0) {
+        if (rows.length === 0) 
             return res.status(404).json(response_not_found("CREDENCIALES INCORRECTAS"));
-        } else {
-            return res.status(200).json(response_success(rows[0], "LOGIN EXITOSO"));
-        }
+        else 
+            console.log("LOGIN USER: ", rows);
+            res.status(200).json(response_success(rows[0], "LOGIN EXITOSO"));
 
     } catch (error) {
         console.error("ERROR: ", error);
