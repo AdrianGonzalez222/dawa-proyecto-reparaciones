@@ -8,6 +8,7 @@ export const IngresarCliente = async (req, res) => {
 
 
     } catch (error) {
+        console.error("ERROR: ", error);
         res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
     }
 }
@@ -18,6 +19,7 @@ export const ConsultarCliente = async (req, res) => {
 
 
     } catch (error) {
+        console.error("ERROR: ", error);
         res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
     }
 }
@@ -28,6 +30,7 @@ export const ActualizarCliente = async (req, res) => {
 
 
     } catch (error) {
+        console.error("ERROR: ", error);
         res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
     }
 }
@@ -38,6 +41,7 @@ export const ListarCliente = async (req, res) => {
 
 
     } catch (error) {
+        console.error("ERROR: ", error);
         res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
     }
 }
@@ -48,6 +52,7 @@ export const EliminarCliente = async (req, res) => {
 
 
     } catch (error) {
+        console.error("ERROR: ", error);
         res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
     }
 }

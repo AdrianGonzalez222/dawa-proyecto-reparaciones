@@ -8,6 +8,7 @@ export const IngresarReparacionRepuesto = async (req, res) => {
 
 
     } catch (error) {
+        console.error("ERROR: ", error);
         res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
     }
 }
@@ -18,6 +19,7 @@ export const ConsultarReparacionRepuesto = async (req, res) => {
 
 
     } catch (error) {
+        console.error("ERROR: ", error);
         res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
     }
 }
@@ -28,6 +30,7 @@ export const ActualizarReparacionRepuesto = async (req, res) => {
 
 
     } catch (error) {
+        console.error("ERROR: ", error);
         res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
     }
 }
@@ -38,6 +41,7 @@ export const ListarReparacionRepuesto = async (req, res) => {
 
 
     } catch (error) {
+        console.error("ERROR: ", error);
         res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
     }
 }
