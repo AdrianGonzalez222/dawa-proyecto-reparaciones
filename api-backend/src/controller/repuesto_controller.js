@@ -111,7 +111,7 @@ export const StockRepuesto = async (req, res) => {
 
         const { id, cantidad } = req.body;
         const selectQuery = `
-            SELECT stock 
+            SELECT stock, codigo
             FROM repuesto 
             WHERE id = ?
         `;

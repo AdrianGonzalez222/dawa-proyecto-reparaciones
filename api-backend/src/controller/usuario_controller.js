@@ -117,15 +117,9 @@ export const Login = async (req, res) => {
 
         const { username, password } = req.body;
         const query = `
-            SELECT 
-                username,
-                password,
-                estado,
-                rol
-            FROM 
-                usuario
-            WHERE 
-                username = ? AND password = ? AND estado = 'activo'
+            SELECT username, password, estado, rol
+            FROM usuario
+            WHERE username = ? AND password = ? AND estado = 'activo'
         `;
 
         const [rows] = await db_pool_connection.query(query, [username, password]);
