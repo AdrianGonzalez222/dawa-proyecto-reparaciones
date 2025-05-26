@@ -23,35 +23,6 @@ export const IngresarReparacion = async (req, res) => {
     }
 }
 
-export const ActualizarReparacion = async (req, res) => {
-    try {
-
-        const { id, estado } = req.body;
-        let query = `UPDATE reparacion SET estado = ?`;
-
-        if (estado === 'finalizada' || estado === 'cancelada') {
-            const fecha_fin = new Date(); 
-            query += `, fecha_fin = ?`;
-            const [rows] = await db_pool_connection.query(query + ' WHERE id = ?', [estado, fecha_fin, id]);
-        } else {
-            const [rows] = await db_pool_connection.query(query + ' WHERE id = ?', [estado, id]);
-        }
-
-
-
-        if (rows.affectedRows === 0) {
-            return res.status(404).json(response_not_found("REPARACION NO ENCONTRADA"));
-        } else {
-            console.log("UPDATE ORDER-REPAIR: ", rows);
-            res.status(200).json(response_success(null, "REPARACION ACTUALIZADA CON EXITO"));
-        }
-
-    } catch (error) {
-        console.error("ERROR: ", error);
-        res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
-    }
-}
-
 export const ListarReparacionDisponible = async (req, res) => {
     try {
 
@@ -114,7 +85,7 @@ export const HistorialReparacion = async (req, res) => {
 
 export const CancelarReparacion = async (req, res) => {
     try {
-        
+
         const { id, id_cliente } = req.body;
         const query = `
             UPDATE reparacion
