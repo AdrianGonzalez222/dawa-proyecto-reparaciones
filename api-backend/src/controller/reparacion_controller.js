@@ -86,14 +86,14 @@ export const HistorialReparacion = async (req, res) => {
 export const CancelarReparacion = async (req, res) => {
     try {
 
-        const { id, id_cliente } = req.body;
+        const { id } = req.body;
         const query = `
             UPDATE reparacion
             SET estado = 'cancelada', fecha_fin = NOW()
-            WHERE id = ? AND id_cliente = ?
+            WHERE id = ?
         `;
 
-        const [rows] = await db_pool_connection.query(query, [id, id_cliente]);
+        const [rows] = await db_pool_connection.query(query, [id]);
         if (rows.affectedRows === 0) {
             return res.status(404).json(response_not_found("REPARACION NO ENCONTRADA"));
         } else {
