@@ -83,21 +83,25 @@ export const ListarCliente = async (req, res) => {
     }
 }
 
-export const EliminarCliente = async (req, res) => {
-    try {
-
-
-
-    } catch (error) {
-        console.error("ERROR: ", error);
-        res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
-    }
-}
-
 export const ConsultarCliente = async (req, res) => {
     try {
 
-
+        const { id } = req.body;
+        const query = `
+            SELECT 
+                c.cedula, c.nombres, c.apellidos, c.celular, c.direccion,
+                u.username, u.email, u.estado
+            FROM cliente c
+            INNER JOIN usuario u ON c.id_usuario = u.id
+        `;
+        
+        const [rows] = await db_pool_connection.query(query, [id]);
+        if (rows.length <= 0) {
+            return res.status(404).json(response_not_found("CLIENTE NO ENCONTRADO"));
+        } else {
+            console.log("SELECT TEC: ", rows);
+            res.status(200).json(response_success(rows, "CONSULTA EXITOSA"));
+        }
 
     } catch (error) {
         console.error("ERROR: ", error);

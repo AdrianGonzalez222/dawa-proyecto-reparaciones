@@ -91,27 +91,6 @@ export const EstadoUsuario = async (req, res) => {
     }
 }
 
-export const ListarUsuario = async (req, res) => {
-    try {
-
-        const query = `
-            SELECT * FROM usuario
-        `;
-        
-        const [rows] = await db_pool_connection.query(query);
-        if (rows.length <= 0) {
-            return res.status(404).json(response_not_found("USUARIOS NO ENCONTRADOS"));
-        } else {
-            console.log("LIST USER: ", rows);
-            res.status(200).json(response_success(rows, "CONSULTA EXITOSA"));
-        }
-
-    } catch (error) {
-        console.error("ERROR: ", error);
-        res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
-    }
-}
-
 export const Login = async (req, res) => {
     try {
 
@@ -139,18 +118,20 @@ export const Login = async (req, res) => {
 export const ConsultarUsuario = async (req, res) => {
     try {
 
+        const { id } = req.body;
+        const query = `
+            SELECT username, password, email
+            FROM usuario
+            WHERE id = ?
+        `;
         
-
-    } catch (error) {
-        console.error("ERROR: ", error);
-        res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
-    }
-}
-
-export const EliminarUsuario = async (req, res) => {
-    try {
-
-
+        const [rows] = await db_pool_connection.query(query, [id]);
+        if (rows.length <= 0) {
+            return res.status(404).json(response_not_found("USUARIO NO ENCONTRADO"));
+        } else {
+            console.log("SELECT USER: ", rows);
+            res.status(200).json(response_success(rows, "CONSULTA EXITOSA"));
+        }
 
     } catch (error) {
         console.error("ERROR: ", error);

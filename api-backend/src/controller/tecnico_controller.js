@@ -66,7 +66,11 @@ export const ListarTecnico = async (req, res) => {
     try {
 
         const query = `
-            SELECT * FROM tecnico
+            SELECT 
+                t.cedula, t.nombres, t.apellidos, t.celular,
+                u.username, u.email, u.estado
+            FROM tecnico t
+            INNER JOIN usuario u ON t.id_usuario = u.id
         `;
         
         const [rows] = await db_pool_connection.query(query);
@@ -83,21 +87,23 @@ export const ListarTecnico = async (req, res) => {
     }
 }
 
-export const EliminarTecnico = async (req, res) => {
-    try {
-
-
-
-    } catch (error) {
-        console.error("ERROR: ", error);
-        res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
-    }
-}
-
 export const ConsultarTecnico = async (req, res) => {
     try {
 
-
+        const { id } = req.body;
+        const query = `
+            SELECT cedula, nombres, apellidos, celular
+            FROM tecnico
+            WHERE id = ?
+        `;
+        
+        const [rows] = await db_pool_connection.query(query, [id]);
+        if (rows.length <= 0) {
+            return res.status(404).json(response_not_found("TECNICO NO ENCONTRADO"));
+        } else {
+            console.log("SELECT TEC: ", rows);
+            res.status(200).json(response_success(rows, "CONSULTA EXITOSA"));
+        }
 
     } catch (error) {
         console.error("ERROR: ", error);

@@ -33,14 +33,14 @@ export const ActualizarRepuesto = async (req, res) => {
     try {
 
         const { id } = req.body;
-        const { codigo, descripcion, stock, precio } = req.body;
+        const { codigo, descripcion, precio } = req.body;
         const query = `
             UPDATE repuesto
-            SET codigo = ?, descripcion = ?, stock = ?, precio = ?
+            SET codigo = ?, descripcion = ?, precio = ?
             WHERE id = ?
         `;
 
-        const [rows] = await db_pool_connection.query(query, [codigo, descripcion, stock, precio, id]);
+        const [rows] = await db_pool_connection.query(query, [codigo, descripcion, precio, id]);
         if (rows.affectedRows === 0) {
             return res.status(404).json(response_not_found("REPUESTO NO ENCONTRADO"));
         } else {
@@ -135,28 +135,6 @@ export const StockRepuesto = async (req, res) => {
         }
 
         res.status(200).json(response_success(null, "STOCK ACTUALIZADO: " + stockActual + " -> " + nuevoStock));
-
-    } catch (error) {
-        console.error("ERROR: ", error);
-        res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
-    }
-}
-
-export const EliminarRepuesto = async (req, res) => {
-    try {
-
-
-
-    } catch (error) {
-        console.error("ERROR: ", error);
-        res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
-    }
-}
-
-export const ConsultarRepuesto = async (req, res) => {
-    try {
-
-
 
     } catch (error) {
         console.error("ERROR: ", error);
