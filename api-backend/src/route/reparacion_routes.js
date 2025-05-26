@@ -33,7 +33,7 @@ rutas_reparacion.put("/repair/repuesto/stock", StockRepuesto);
 rutas_reparacion.post("/repair/reparacion", IngresarReparacion);
 rutas_reparacion.get("/repair/reparacion/list/available", ListarReparacionDisponible);
 rutas_reparacion.get("/repair/reparacion/history", HistorialReparacion);
-rutas_reparacion.put("/repair/reparacion/history", CancelarReparacion);
+rutas_reparacion.put("/repair/reparacion", CancelarReparacion);
 // REPARACION-REPUESTO
 
 // REPARACION-TECNICO
