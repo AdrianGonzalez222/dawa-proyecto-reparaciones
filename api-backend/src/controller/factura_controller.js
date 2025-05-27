@@ -4,9 +4,9 @@ import { response_success, response_create, response_not_found, response_error, 
 // FACTURA
 export const IngresarFactura = async (req, res) => {
     try {
-
+        // INGRESAR FACTURA
+        // ACTUALIZAR ESTADO DE REPARACION A 'FINALIZAD'
         
-
     } catch (error) {
         console.error("ERROR: ", error);
         res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
