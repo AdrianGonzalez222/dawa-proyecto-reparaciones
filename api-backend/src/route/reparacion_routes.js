@@ -2,7 +2,7 @@ import { Router } from "express";
 import { ListarCliente, ActualizarUsuarioCliente, ConsultarUsuarioCliente, IngresarUsuarioCliente } from "../controller/cliente_controller.js";
 import { IngresarFactura } from "../controller/factura_controller.js";
 import { CancelarReparacion, HistorialReparacion, IngresarReparacion, ListarReparacionDisponible } from "../controller/reparacion_controller.js";
-import { IngresarReparacionRepuesto, ListarReparacionRepuesto } from "../controller/reparacion_repuesto_controller.js";
+import { AdicionarReparacionRepuesto, ListarReparacionRepuesto, QuitarReparacionRepuesto } from "../controller/reparacion_repuesto_controller.js";
 import { ActualizarDatosReparacionTecnico, AsignarReparacionTecnico, ConsultarReparacionTecnico, EstadoReparacionTecnico } from "../controller/reparacion_tecnico_controller.js";
 import { ActualizarRepuesto, EstadoRepuesto, IngresarRepuesto, ListarRepuesto, StockRepuesto } from "../controller/repuesto_controller.js";
 import { ListarTecnico, ActualizarUsuarioTecnico, ConsultarUsuarioTecnico, IngresarUsuarioTecnico } from "../controller/tecnico_controller.js";
@@ -43,7 +43,9 @@ rutas_reparacion.post("/repair/reparacion/list/task", ConsultarReparacionTecnico
 rutas_reparacion.put("/repair/reparacion/list/task", ActualizarDatosReparacionTecnico);
 rutas_reparacion.put("/repair/reparacion/list/task/status", EstadoReparacionTecnico);
 // REPARACION-REPUESTO
-rutas_reparacion.get("/repair/reparacion/list/task/inventory", ListarReparacionRepuesto);
+rutas_reparacion.post("/repair/reparacion/list/task/inventory", ListarReparacionRepuesto);
+rutas_reparacion.post("/repair/reparacion/list/task/inventory/add", AdicionarReparacionRepuesto);
+rutas_reparacion.post("/repair/reparacion/list/task/inventory/del", QuitarReparacionRepuesto);
 // FACTURA
 rutas_reparacion.post("/repair/factura", IngresarFactura);
 
