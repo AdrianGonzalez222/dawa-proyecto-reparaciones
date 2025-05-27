@@ -7,7 +7,7 @@ export const Login = async (req, res) => {
 
         const { username, password } = req.body;
         const query = `
-            SELECT username, password, estado, rol
+            SELECT id, username, rol
             FROM usuario
             WHERE username = ? AND password = ? AND estado = 'activo'
         `;
@@ -122,60 +122,6 @@ export const IngresarUsuarioCliente = async (req, res) => {
     }
 }
 
-export const ConsultarUsuarioTecnico = async (req, res) => {
-    try {
-
-        const { id } = req.body;
-        const query = `
-            SELECT 
-                u.username, u.password, u.email,
-                t.cedula, t.nombres, t.apellidos, t.celular
-            FROM usuario u
-            INNER JOIN tecnico t ON u.id = t.id_usuario
-            WHERE u.id = ?
-        `;
-        
-        const [rows] = await db_pool_connection.query(query, [id]);
-        if (rows.length <= 0) {
-            return res.status(404).json(response_not_found("USUARIO TECNICO NO ENCONTRADO"));
-        } else {
-            console.log("SELECT TEC: ", rows);
-            res.status(200).json(response_success(rows, "CONSULTA EXITOSA"));
-        }
-
-    } catch (error) {
-        console.error("ERROR: ", error);
-        res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
-    }
-}
-
-export const ConsultarUsuarioCliente = async (req, res) => {
-    try {
-
-        const { id } = req.body;
-        const query = `
-            SELECT 
-                u.username, u.password, u.email,
-                c.cedula, c.nombres, c.apellidos, c.celular, c.direccion
-            FROM usuario u
-            INNER JOIN cliente c ON u.id = c.id_usuario
-            WHERE u.id = ?
-        `;
-        
-        const [rows] = await db_pool_connection.query(query, [id]);
-        if (rows.length <= 0) {
-            return res.status(404).json(response_not_found("USUARIO CLIENTE NO ENCONTRADO"));
-        } else {
-            console.log("SELECT TEC: ", rows);
-            res.status(200).json(response_success(rows, "CONSULTA EXITOSA"));
-        }
-
-    } catch (error) {
-        console.error("ERROR: ", error);
-        res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
-    }
-}
-
 export const ActualizarUsuarioTecnico = async (req, res) => {
     const connection = await db_pool_connection.getConnection();
 
@@ -287,6 +233,88 @@ export const ActualizarUsuarioCliente = async (req, res) => {
         connection.release();
     }
 };
+
+export const ConsultarUsuarioRol = async (req, res) => {
+    try {
+
+        const { id_usuario, rol } = req.body;
+        let query;
+        let table;
+
+        if (rol === 'cliente') {
+            table = 'cliente';
+        } else if (rol === 'tecnico' || rol === 'admin') {
+            table = 'tecnico';
+        } 
+
+        query = "SELECT id FROM " + table + " WHERE id_usuario = ?";
+        
+        const [rows] = await db_pool_connection.query(query, [id_usuario]);
+        if (rows.length === 0) {
+            return res.status(404).json(response_not_found(rol.toUpperCase() + " NO ENCONTRADO"));
+        }
+
+        res.status(200).json(response_success(rows[0], rol.toUpperCase() + " ENCONTRADO"));
+
+    } catch (error) {
+        console.error("ERROR: ", error);
+        res.status(500).json(response_error("ERROR API-SQL ->  " + error.sqlMessage));
+    }
+};
+
+export const ConsultarUsuarioTecnico = async (req, res) => {
+    try {
+
+        const { id } = req.body;
+        const query = `
+            SELECT 
+                u.username, u.password, u.email,
+                t.cedula, t.nombres, t.apellidos, t.celular
+            FROM usuario u
+            INNER JOIN tecnico t ON u.id = t.id_usuario
+            WHERE u.id = ?
+        `;
+        
+        const [rows] = await db_pool_connection.query(query, [id]);
+        if (rows.length <= 0) {
+            return res.status(404).json(response_not_found("USUARIO TECNICO NO ENCONTRADO"));
+        } else {
+            console.log("SELECT TEC: ", rows);
+            res.status(200).json(response_success(rows, "CONSULTA EXITOSA"));
+        }
+
+    } catch (error) {
+        console.error("ERROR: ", error);
+        res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
+    }
+}
+
+export const ConsultarUsuarioCliente = async (req, res) => {
+    try {
+
+        const { id } = req.body;
+        const query = `
+            SELECT 
+                u.username, u.password, u.email,
+                c.cedula, c.nombres, c.apellidos, c.celular, c.direccion
+            FROM usuario u
+            INNER JOIN cliente c ON u.id = c.id_usuario
+            WHERE u.id = ?
+        `;
+        
+        const [rows] = await db_pool_connection.query(query, [id]);
+        if (rows.length <= 0) {
+            return res.status(404).json(response_not_found("USUARIO CLIENTE NO ENCONTRADO"));
+        } else {
+            console.log("SELECT TEC: ", rows);
+            res.status(200).json(response_success(rows, "CONSULTA EXITOSA"));
+        }
+
+    } catch (error) {
+        console.error("ERROR: ", error);
+        res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
+    }
+}
 
 export const EstadoUsuario = async (req, res) => {
     try {

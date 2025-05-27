@@ -29,7 +29,7 @@ export const ListarReparacionDisponible = async (req, res) => {
         const query = `
             SELECT 
                 r.id, r.equipo, r.problema, r.estado, r.fecha_creacion,
-                c.cedula, CONCAT(c.nombres, ' ', c.apellidos) AS nombre_cliente, c.celular, c.direccion
+                c.cedula, CONCAT(c.nombres, ' ', c.apellidos) AS nombre_cliente, c.celular
             FROM reparacion r
             INNER JOIN cliente c ON r.id_cliente = c.id
             WHERE r.estado = 'pendiente'
@@ -42,9 +42,11 @@ export const ListarReparacionDisponible = async (req, res) => {
         } else {
 
             rows.forEach(row => {
-                if (row.fecha_creacion) {
-                    row.fecha_creacion = new Date(row.fecha_creacion).toLocaleString('en-US', { timeZone: 'America/Bogota' });
-                }
+                ['fecha_creacion'].forEach(field => {
+                    if (row[field]) {
+                        row[field] = new Date(row[field]).toLocaleString('en-US', { timeZone: 'America/Bogota' });
+                    }
+                });
             });
 
             console.log("LIST AVAILABLE ORDER-REPAIR: ", rows);
@@ -73,6 +75,15 @@ export const HistorialReparacion = async (req, res) => {
         if (rows.length <= 0) {
             return res.status(404).json(response_not_found("HISTORIAL DE REPARACIONES NO ENCONTRADAS"));
         } else {
+
+            rows.forEach(row => {
+                ['fecha_creacion', 'fecha_asignacion', 'fecha_fin'].forEach(field => {
+                    if (row[field]) {
+                        row[field] = new Date(row[field]).toLocaleString('en-US', { timeZone: 'America/Bogota' });
+                    }
+                });
+            });
+
             console.log("HIST REPAIR: ", rows);
             res.status(200).json(response_success(rows, "CONSULTA EXITOSA"));
         }
