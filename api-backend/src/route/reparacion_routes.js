@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { ListarCliente, ActualizarUsuarioCliente, ConsultarUsuarioCliente, IngresarUsuarioCliente } from "../controller/cliente_controller.js";
-import { ConsultarReparadosFactura, IngresarFactura } from "../controller/factura_controller.js";
+import { AnularFactura, ConsultarReparadosFactura, IngresarFactura, ListarFactura } from "../controller/factura_controller.js";
 import { CancelarReparacion, ClienteHistorialReparacion, IngresarReparacion, ListarClienteReparacion, ListarReparacionDisponible } from "../controller/reparacion_controller.js";
 import { AdicionarReparacionRepuesto, ListarReparacionRepuesto, QuitarReparacionRepuesto } from "../controller/reparacion_repuesto_controller.js";
 import { ActualizarDatosReparacionTecnico, AsignarReparacionTecnico, ConsultarReparacionTecnico, EstadoReparacionTecnico } from "../controller/reparacion_tecnico_controller.js";
@@ -36,13 +36,13 @@ rutas_reparacion.post("/repair/reparacion", IngresarReparacion); // TECNICO
 rutas_reparacion.get("/repair/reparacion", ListarClienteReparacion); // TECNICO
 rutas_reparacion.get("/repair/reparacion/list/available", ListarReparacionDisponible); // TECNICO
 rutas_reparacion.post("/repair/reparacion/history", ClienteHistorialReparacion); // CLIENTE
-
-rutas_reparacion.put("/repair/reparacion", CancelarReparacion);
 // REPARACION-TECNICO
 rutas_reparacion.post("/repair/reparacion/list/available", AsignarReparacionTecnico);
 rutas_reparacion.post("/repair/reparacion/list/task", ConsultarReparacionTecnico);
 rutas_reparacion.put("/repair/reparacion/list/task", ActualizarDatosReparacionTecnico);
 rutas_reparacion.put("/repair/reparacion/list/task/status", EstadoReparacionTecnico);
+
+rutas_reparacion.put("/repair/reparacion/list/task/cancel", CancelarReparacion);
 // REPARACION-REPUESTO
 rutas_reparacion.post("/repair/reparacion/list/task/inventory", ListarReparacionRepuesto);
 rutas_reparacion.post("/repair/reparacion/list/task/inventory/add", AdicionarReparacionRepuesto);
@@ -50,5 +50,7 @@ rutas_reparacion.post("/repair/reparacion/list/task/inventory/del", QuitarRepara
 // FACTURA
 rutas_reparacion.post("/repair/factura", IngresarFactura);
 rutas_reparacion.post("/repair/factura/list/complete", ConsultarReparadosFactura);
+rutas_reparacion.get("/repair/factura/reporter", ListarFactura);
+rutas_reparacion.put("/repair/factura/reporter", AnularFactura);
 
 export default rutas_reparacion;

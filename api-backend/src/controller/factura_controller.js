@@ -3,13 +3,54 @@ import { response_success, response_create, response_not_found, response_error, 
 
 // FACTURA
 export const IngresarFactura = async (req, res) => {
+    const connection = await db_pool_connection.getConnection();
+
     try {
-        // INGRESAR FACTURA
-        // ACTUALIZAR ESTADO DE REPARACION A 'FINALIZAD'
-        
+
+        const { num_fact, iva_app, iva, subtotal, total, id_reparacion } = req.body;
+        await connection.beginTransaction();
+
+        const query = `
+            SELECT estado FROM reparacion WHERE id = ?
+        `;
+
+        const [repairRows] = await connection.query(query, [id_reparacion]);
+
+        if (repairRows.length === 0) {
+            await connection.rollback();
+            return res.status(404).json(response_not_found("REPARACIÓN NO ENCONTRADA"));
+        }
+
+        if (repairRows[0].estado === 'cancelada' || repairRows[0].estado === 'finalizada') {
+            await connection.rollback();
+            return res.status(400).json(response_bad_request("LA REPARACIÓN YA FUE FINALIZADA O CANCELADA"));
+        }
+
+        const insertFacturaQuery = `
+            INSERT INTO factura (num_fact, iva_app, iva, subtotal, total, id_reparacion)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+
+        const [insertResult] = await connection.query(insertFacturaQuery, [
+            num_fact, iva_app, iva, subtotal, total, id_reparacion
+        ]);
+
+        const updateReparacionQuery = `
+            UPDATE reparacion
+            SET estado = 'finalizada', fecha_fin = NOW()
+            WHERE id = ?
+        `;
+
+        await connection.query(updateReparacionQuery, [id_reparacion]);
+        await connection.commit();
+        res.status(201).json(response_create(insertResult.insertId, "FACTURA INGRESADA Y REPARACIÓN FINALIZADA"));
+
     } catch (error) {
+        await connection.rollback();
         console.error("ERROR: ", error);
-        res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
+        res.status(500).json(response_error("ERROR API-SQL -> " + error.sqlMessage));
+    } finally {
+        connection.release();
     }
 }
 
@@ -18,7 +59,7 @@ export const ConsultarReparadosFactura = async (req, res) => {
 
         const { id_tecnico } = req.body;
 
-        const query = `
+        const reparacionesQuery = `
             SELECT 
                 r.id, r.equipo, r.problema,
                 c.cedula, CONCAT(c.nombres, ' ', c.apellidos) AS nombre_cliente,
@@ -30,13 +71,31 @@ export const ConsultarReparadosFactura = async (req, res) => {
             ORDER BY rt.fecha_reparado DESC
         `;
 
-        const [rows] = await db_pool_connection.query(query, [id_tecnico]);
-        if (rows.length === 0) {
+        const [reparaciones] = await db_pool_connection.query(reparacionesQuery, [id_tecnico]);
+        if (reparaciones.length === 0) {
             return res.status(404).json(response_not_found("REPARACIONES NO ENCONTRADAS"));
-        } else {
-            console.log("LOGIN USER: ", rows);
-            res.status(200).json(response_success(rows, "CONSULTA EXITOSA"));
         }
+
+        const repuestoQuery = `
+            SELECT 
+                rr.id_reparacion,
+                rr.cantidad,
+                r.codigo, r.descripcion, r.precio,
+                r.id AS id_repuesto
+            FROM reparacion_repuesto rr
+            INNER JOIN repuesto r ON rr.id_repuesto = r.id
+            WHERE rr.id_reparacion IN (?)
+        `;
+
+        const reparacionIds = reparaciones.map(r => r.id);
+        const [repuestos] = await db_pool_connection.query(repuestoQuery, [reparacionIds]);
+
+        const reparacionesConRepuestos = reparaciones.map(reparacion => ({
+            ...reparacion,
+            repuestos: repuestos.filter(r => r.id_reparacion === reparacion.id)
+        }));
+
+        res.status(200).json(response_success(reparacionesConRepuestos, "CONSULTA EXITOSA"));
 
     } catch (error) {
         console.error("ERROR: ", error);
@@ -56,12 +115,46 @@ export const ListarFactura = async (req, res) => {
 }
 
 export const AnularFactura = async (req, res) => {
+    const connection = await db_pool_connection.getConnection();
+    
     try {
 
+        const { id } = req.body;
+        await connection.beginTransaction();
 
+        const querySelect = `
+            SELECT estado FROM factura WHERE id = ?
+        `;
+
+        const [facturaRows] = await connection.query(querySelect, [id]);
+        if (facturaRows.length === 0) {
+            await connection.rollback();
+            return res.status(404).json(response_not_found("FACTURA NO ENCONTRADA"));
+        }
+
+        if (facturaRows[0].estado === 'anulada') {
+            await connection.rollback();
+            return res.status(400).json(response_bad_request("LA FACTURA YA ESTÁ ANULADA"));
+        }
+
+        const queryUpdate = `
+            UPDATE factura
+            SET iva_app = 0.00, iva = 0.00, subtotal = 0.00, total = 0.00, estado = 'anulada'
+            WHERE id = ?
+        `;
+
+        const [updateResult] = await connection.query(queryUpdate, [id]);
+
+        await connection.commit();  
+        console.log("UPDATE FACTURA: ", querySelect);
+        console.log("UPDATE FACTURA: ", updateResult);
+        res.status(200).json(response_success(null, "FACTURA ANULADA CON ÉXITO"));
 
     } catch (error) {
+        await connection.rollback();
         console.error("ERROR: ", error);
-        res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
+        res.status(500).json(response_error("ERROR API-SQL -> " + error.sqlMessage));
+    } finally {
+        connection.release();
     }
 }
