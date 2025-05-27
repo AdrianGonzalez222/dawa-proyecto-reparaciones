@@ -12,9 +12,10 @@ const rutas_reparacion = Router();
 
 // USUARIO
 rutas_reparacion.post("/repair/login", Login);
+rutas_reparacion.post("/repair/register", IngresarUsuarioCliente);
+rutas_reparacion.post("/repair", ConsultarUsuarioRol);
 rutas_reparacion.post("/repair/usuario/register/tecnico", IngresarUsuarioTecnico);
 rutas_reparacion.post("/repair/usuario/register/cliente", IngresarUsuarioCliente);
-rutas_reparacion.get("/repair", ConsultarUsuarioRol);
 rutas_reparacion.post("/repair/usuario/tecnico", ConsultarUsuarioTecnico);
 rutas_reparacion.post("/repair/usuario/cliente", ConsultarUsuarioCliente);
 rutas_reparacion.put("/repair/usuario/tecnico", ActualizarUsuarioTecnico);
@@ -32,13 +33,13 @@ rutas_reparacion.put("/repair/repuesto/status", EstadoRepuesto);
 rutas_reparacion.put("/repair/repuesto/stock", StockRepuesto);
 // REPARACION
 rutas_reparacion.post("/repair/reparacion", IngresarReparacion);
+rutas_reparacion.post("/repair/reparacion/history", HistorialReparacion);
 rutas_reparacion.get("/repair/reparacion/list/available", ListarReparacionDisponible);
-rutas_reparacion.get("/repair/reparacion/history", HistorialReparacion);
 
 rutas_reparacion.put("/repair/reparacion", CancelarReparacion);
 // REPARACION-TECNICO
 rutas_reparacion.post("/repair/reparacion/list/available", AsignarReparacionTecnico);
-rutas_reparacion.get("/repair/reparacion/list/task", ConsultarReparacionTecnico);
+rutas_reparacion.post("/repair/reparacion/list/task", ConsultarReparacionTecnico);
 // REPARACION-REPUESTO
 
 // FACTURA
