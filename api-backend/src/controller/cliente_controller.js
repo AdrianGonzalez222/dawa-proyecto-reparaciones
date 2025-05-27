@@ -7,7 +7,7 @@ export const ListarCliente = async (req, res) => {
 
         const query = `
             SELECT 
-                c.id ,c.cedula, c.nombres, c.apellidos, c.celular, c.direccion,
+                u.id ,c.cedula, c.nombres, c.apellidos, c.celular, c.direccion,
                 u.username, u.email, u.estado
             FROM cliente c
             INNER JOIN usuario u ON c.id_usuario = u.id

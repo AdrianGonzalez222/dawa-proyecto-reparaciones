@@ -51,7 +51,7 @@ export const ConsultarReparacionTecnico = async (req, res) => {
             INNER JOIN reparacion_tecnico rt ON r.id = rt.id_reparacion
             INNER JOIN cliente c ON r.id_cliente = c.id
             WHERE rt.id_tecnico = ?
-            ORDER BY r.fecha_asignacion DESC;
+            ORDER BY r.fecha_asignacion DESC
         `;
         
         const [rows] = await db_pool_connection.query(query, [id_tecnico]);
@@ -70,6 +70,17 @@ export const ConsultarReparacionTecnico = async (req, res) => {
             console.log("PERSONAL ORDER-REPAIR: ", rows);
             res.status(200).json(response_success(rows, "CONSULTA EXITOSA"));
         }
+
+    } catch (error) {
+        console.error("ERROR: ", error);
+        res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
+    }
+}
+
+export const ActualizarDatosReparacionTecnico = async (req, res) => {
+    try {
+
+
 
     } catch (error) {
         console.error("ERROR: ", error);

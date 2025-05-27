@@ -7,7 +7,7 @@ export const ListarTecnico = async (req, res) => {
 
         const query = `
             SELECT 
-                t.id, t.cedula, t.nombres, t.apellidos, t.celular,
+                u.id, t.cedula, t.nombres, t.apellidos, t.celular,
                 u.username, u.email, u.estado
             FROM tecnico t
             INNER JOIN usuario u ON t.id_usuario = u.id

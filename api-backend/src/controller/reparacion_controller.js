@@ -65,8 +65,11 @@ export const HistorialReparacion = async (req, res) => {
         const { id_cliente } = req.body;
         const query = `
             SELECT 
-                id, equipo, problema, estado, fecha_creacion, fecha_asignacion, fecha_fin
-            FROM reparacion
+                r.id, r.equipo, r.estado AS estado_order, r.fecha_creacion, r.fecha_asignacion, r.fecha_fin,
+                rt.estado AS estado_equipo,
+                r.problema, rt.observacion
+            FROM reparacion r
+            INNER JOIN reparacion_tecnico rt ON rt.id_reparacion = r.id
             WHERE id_cliente = ?
             ORDER BY fecha_creacion DESC
         `;
