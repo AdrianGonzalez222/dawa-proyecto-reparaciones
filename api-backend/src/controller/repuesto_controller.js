@@ -134,6 +134,8 @@ export const StockRepuesto = async (req, res) => {
             return res.status(400).json(response_bad_request("ERROR AL ACTUALIZAR STOCK"));
         }
 
+        console.log("SELECT STOCK REP: ", rows1);
+        console.log("UPDATE STOCK REP: ", rows2);
         res.status(200).json(response_success(null, "STOCK ACTUALIZADO: " + stockActual + " -> " + nuevoStock));
 
     } catch (error) {

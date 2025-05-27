@@ -10,13 +10,25 @@ export const AsignarReparacionTecnico = async (req, res) => {
         const { id_reparacion, id_tecnico } = req.body;
         await connection.beginTransaction();
 
+        const stateQuery = `
+            SELECT estado
+            FROM reparacion
+            WHERE id = ?
+        `;
+        
+        const [stateRows] = await connection.query(stateQuery, [id_reparacion]);
+        if (stateRows[0].estado !== 'pendiente') {
+            await connection.rollback();
+            return res.status(400).json(response_bad_request("REPARACION NO DISPONIBLE"));
+        }
+
         const updateQuery = `
             UPDATE reparacion 
             SET estado = 'asignada', fecha_asignacion = NOW() 
             WHERE id = ?
         `;
 
-        await connection.query(updateQuery, [id_reparacion]);
+        const [updateResult] = await connection.query(updateQuery, [id_reparacion]);
 
         const insertQuery = `
             INSERT INTO reparacion_tecnico
@@ -26,6 +38,8 @@ export const AsignarReparacionTecnico = async (req, res) => {
 
         const [rows] = await connection.query(insertQuery, [id_tecnico, id_reparacion]);
         await connection.commit();
+        console.log("STATE REPAIR: ", stateRows);
+        console.log("UPDATE REPAIR: ", updateResult);
         console.log("ASIGNAR REPAIR: ", rows);
         res.status(201).json(response_create(rows.insertId, "REPARACIÓN ASIGNADA CON ÉXITO"));
 
@@ -46,7 +60,7 @@ export const ConsultarReparacionTecnico = async (req, res) => {
             SELECT 
                 r.id, r.equipo, r.fecha_asignacion, r.fecha_fin, r.estado,
                 c.cedula, CONCAT(c.nombres, ' ', c.apellidos) AS nombre_cliente,
-                rt.observacion, rt.precio_servicio, c.celular, c.direccion, r.problema
+                r.problema, rt.observacion, rt.precio_servicio, c.celular, c.direccion
             FROM reparacion r
             INNER JOIN reparacion_tecnico rt ON r.id = rt.id_reparacion
             INNER JOIN cliente c ON r.id_cliente = c.id
@@ -80,7 +94,21 @@ export const ConsultarReparacionTecnico = async (req, res) => {
 export const ActualizarDatosReparacionTecnico = async (req, res) => {
     try {
 
+        const { id_reparacion } = req.body;
+        const { observacion, precio_servicio } = req.body;
+        const query = `
+            UPDATE reparacion_tecnico
+            SET observacion = ?, precio_servicio = ?
+            WHERE id_reparacion = ?
+        `;
 
+        const [rows] = await db_pool_connection.query(query, [observacion, precio_servicio, id_reparacion]);
+        if (rows.affectedRows === 0) {
+            return res.status(404).json(response_not_found("ORDEN DE REPARACION NO ENCONTRADA"));
+        } else {
+            console.log("UPDATE ORDER-REPAIR: ", rows);
+            res.status(200).json(response_success(null, "ORDEN DE REPARACION ACTUALIZADA CON EXITO"));
+        }
 
     } catch (error) {
         console.error("ERROR: ", error);
@@ -88,4 +116,37 @@ export const ActualizarDatosReparacionTecnico = async (req, res) => {
     }
 }
 
+export const EstadoReparacionTecnico = async (req, res) => {
+    try {
 
+        const { id_reparacion, estado } = req.body;
+        let query;
+        let values = [estado, id_reparacion];
+
+        if (estado === 'reparado') {
+            query = `
+                UPDATE reparacion_tecnico
+                SET estado = ?, fecha_reparado = NOW()
+                WHERE id_reparacion = ?
+            `;
+        } else {
+            query = `
+                UPDATE reparacion_tecnico
+                SET estado = ?
+                WHERE id_reparacion = ?
+            `;
+        }
+
+        const [rows] = await db_pool_connection.query(query, values);
+        if (rows.affectedRows === 0) {
+            return res.status(404).json(response_not_found("ORDEN DE REPARACION NO ENCONTRADA"));
+        } else {
+            console.log("UPDATE STATUS ORDER-REPAIR: ", rows);
+            res.status(200).json(response_success(null, "ESTADO ACTUALIZADO CORRECTAMENTE"));
+        }
+
+    } catch (error) {
+        console.error("ERROR: ", error);
+        res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
+    }
+}
