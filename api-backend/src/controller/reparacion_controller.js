@@ -59,7 +59,7 @@ export const ListarReparacionDisponible = async (req, res) => {
     }
 }
 
-export const HistorialReparacion = async (req, res) => {
+export const ClienteHistorialReparacion = async (req, res) => {
     try {
 
         const { id_cliente } = req.body;
@@ -67,9 +67,11 @@ export const HistorialReparacion = async (req, res) => {
             SELECT 
                 r.id, r.equipo, r.estado AS estado_order, r.fecha_creacion, r.fecha_asignacion, r.fecha_fin,
                 rt.estado AS estado_equipo,
+                CONCAT(t.nombres, ' ', t.apellidos) AS tecnico_asignado, t.celular,
                 r.problema, rt.observacion
             FROM reparacion r
-            INNER JOIN reparacion_tecnico rt ON rt.id_reparacion = r.id
+            LEFT JOIN reparacion_tecnico rt ON rt.id_reparacion = r.id
+            LEFT JOIN tecnico t ON rt.id_tecnico = t.id
             WHERE id_cliente = ?
             ORDER BY fecha_creacion DESC
         `;
