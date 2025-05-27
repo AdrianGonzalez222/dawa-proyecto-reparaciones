@@ -57,12 +57,11 @@ export const AdicionarReparacionRepuesto = async (req, res) => {
         if (exists.length > 0) {
             return res.status(409).json(response_error("REPUESTO YA ADICIONADO A ESTA REPARACION"));
         }
-
         await connection.beginTransaction();
 
         const consultQuery = `
-            SELECT 1 FROM reparacion_repuesto 
-            WHERE id_reparacion = ? AND id_repuesto = ?
+            SELECT stock FROM repuesto 
+            WHERE id = ?
         `;
 
         const [stockRows] = await connection.query(consultQuery, [id_repuesto]);
