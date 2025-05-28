@@ -120,19 +120,22 @@ export const EstadoReparacionTecnico = async (req, res) => {
     try {
 
         const { id_reparacion, estado } = req.body;
+        const { observacion, precio_servicio } = req.body;
         let query;
-        let values = [estado, id_reparacion];
+        let values = [estado, id_reparacion, observacion, precio_servicio].filter(value => value != null && value !== "");
 
         if (estado === 'reparado') {
             query = `
                 UPDATE reparacion_tecnico
-                SET estado = ?, fecha_reparado = NOW()
+                SET estado = ?, fecha_reparado = NOW(), 
+                observacion = ?, precio_servicio = ?
                 WHERE id_reparacion = ?
             `;
         } else {
             query = `
                 UPDATE reparacion_tecnico
-                SET estado = ?
+                SET estado = ?,
+                observacion = ?, precio_servicio = ?
                 WHERE id_reparacion = ?
             `;
         }

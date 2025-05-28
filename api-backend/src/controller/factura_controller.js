@@ -106,7 +106,26 @@ export const ConsultarReparadosFactura = async (req, res) => {
 export const ListarFactura = async (req, res) => {
     try {
 
-
+        const query = `
+            SELECT 
+                f.id, f.num_fact, f.total, f.fecha, f.estado,
+                c.cedula AS cedula_cliente, CONCAT(c.nombres, ' ', c.apellidos) AS cliente,
+                CONCAT(t.nombres, ' ', t.apellidos) AS tecnico
+            FROM factura f
+            INNER JOIN reparacion r ON  r.id = f.id_reparacion
+            INNER JOIN reparacion_tecnico rt ON rt.id_reparacion = f.id_reparacion
+            INNER JOIN cliente c ON c.id = r.id_cliente
+            INNER JOIN tecnico t ON t.id = rt.id_tecnico
+            ORDER BY f.fecha DESC
+        `;
+        
+        const [rows] = await db_pool_connection.query(query);
+        if (rows.length <= 0) {
+            return res.status(404).json(response_not_found("FACTURAS NO ENCONTRADAS"));
+        } else {
+            console.log("LIST FAC: ", rows);
+            res.status(200).json(response_success(rows, "CONSULTA EXITOSA"));
+        }
 
     } catch (error) {
         console.error("ERROR: ", error);
