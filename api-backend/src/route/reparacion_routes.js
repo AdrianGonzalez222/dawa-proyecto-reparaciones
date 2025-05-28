@@ -40,7 +40,6 @@ rutas_reparacion.post("/repair/reparacion/history", ClienteHistorialReparacion);
 rutas_reparacion.post("/repair/reparacion/list/available", AsignarReparacionTecnico);
 rutas_reparacion.post("/repair/reparacion/list/task", ConsultarReparacionTecnico);
 rutas_reparacion.put("/repair/reparacion/list/task", ActualizarDatosReparacionTecnico);
-
 rutas_reparacion.put("/repair/reparacion/list/task/cancel", CancelarReparacion);
 // REPARACION-REPUESTO
 rutas_reparacion.post("/repair/reparacion/list/task/inventory", ListarReparacionRepuesto);
