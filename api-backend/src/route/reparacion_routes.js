@@ -3,7 +3,7 @@ import { ListarCliente, ActualizarUsuarioCliente, ConsultarUsuarioCliente, Ingre
 import { AnularFactura, ConsultarReparadosFactura, IngresarFactura, ListarFactura } from "../controller/factura_controller.js";
 import { CancelarReparacion, ClienteHistorialReparacion, IngresarReparacion, ListarClienteReparacion, ListarReparacionDisponible } from "../controller/reparacion_controller.js";
 import { AdicionarReparacionRepuesto, ListarReparacionRepuesto, QuitarReparacionRepuesto } from "../controller/reparacion_repuesto_controller.js";
-import { ActualizarDatosReparacionTecnico, AsignarReparacionTecnico, ConsultarReparacionTecnico, EstadoReparacionTecnico } from "../controller/reparacion_tecnico_controller.js";
+import { ActualizarDatosReparacionTecnico, AsignarReparacionTecnico, ConsultarReparacionTecnico } from "../controller/reparacion_tecnico_controller.js";
 import { ActualizarRepuesto, EstadoRepuesto, IngresarRepuesto, ListarRepuesto, StockRepuesto } from "../controller/repuesto_controller.js";
 import { ListarTecnico, ActualizarUsuarioTecnico, ConsultarUsuarioTecnico, IngresarUsuarioTecnico } from "../controller/tecnico_controller.js";
 import { ConsultarUsuarioRol, EstadoUsuario, Login } from "../controller/usuario_controller.js";
@@ -32,15 +32,14 @@ rutas_reparacion.put("/repair/repuesto", ActualizarRepuesto);
 rutas_reparacion.put("/repair/repuesto/status", EstadoRepuesto);
 rutas_reparacion.put("/repair/repuesto/stock", StockRepuesto);
 // REPARACION
-rutas_reparacion.post("/repair/reparacion", IngresarReparacion); // TECNICO
-rutas_reparacion.get("/repair/reparacion", ListarClienteReparacion); // TECNICO
-rutas_reparacion.get("/repair/reparacion/list/available", ListarReparacionDisponible); // TECNICO
-rutas_reparacion.post("/repair/reparacion/history", ClienteHistorialReparacion); // CLIENTE
+rutas_reparacion.post("/repair/reparacion", IngresarReparacion); 
+rutas_reparacion.get("/repair/reparacion", ListarClienteReparacion); 
+rutas_reparacion.get("/repair/reparacion/list/available", ListarReparacionDisponible); 
+rutas_reparacion.post("/repair/reparacion/history", ClienteHistorialReparacion); 
 // REPARACION-TECNICO
 rutas_reparacion.post("/repair/reparacion/list/available", AsignarReparacionTecnico);
 rutas_reparacion.post("/repair/reparacion/list/task", ConsultarReparacionTecnico);
 rutas_reparacion.put("/repair/reparacion/list/task", ActualizarDatosReparacionTecnico);
-rutas_reparacion.put("/repair/reparacion/list/task/status", EstadoReparacionTecnico);
 
 rutas_reparacion.put("/repair/reparacion/list/task/cancel", CancelarReparacion);
 // REPARACION-REPUESTO

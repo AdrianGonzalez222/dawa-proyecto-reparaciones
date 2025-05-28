@@ -94,31 +94,6 @@ export const ConsultarReparacionTecnico = async (req, res) => {
 export const ActualizarDatosReparacionTecnico = async (req, res) => {
     try {
 
-        const { id_reparacion } = req.body;
-        const { observacion, precio_servicio } = req.body;
-        const query = `
-            UPDATE reparacion_tecnico
-            SET observacion = ?, precio_servicio = ?
-            WHERE id_reparacion = ?
-        `;
-
-        const [rows] = await db_pool_connection.query(query, [observacion, precio_servicio, id_reparacion]);
-        if (rows.affectedRows === 0) {
-            return res.status(404).json(response_not_found("ORDEN DE REPARACION NO ENCONTRADA"));
-        } else {
-            console.log("UPDATE ORDER-REPAIR: ", rows);
-            res.status(200).json(response_success(null, "ORDEN DE REPARACION ACTUALIZADA CON EXITO"));
-        }
-
-    } catch (error) {
-        console.error("ERROR: ", error);
-        res.status(500).json(response_error("ERROR API-SQL -> " + error['sqlMessage']));
-    }
-}
-
-export const EstadoReparacionTecnico = async (req, res) => {
-    try {
-
         const { id_reparacion, estado } = req.body;
         const { observacion, precio_servicio } = req.body;
         let query;
